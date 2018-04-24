@@ -1,0 +1,10 @@
+--- origsrc/xapps-1.0.4/files/Makefile.am	2017-10-24 06:07:43.000000000 -0500
++++ src/xapps-1.0.4/files/Makefile.am	2018-04-24 08:26:57.349768500 -0500
+@@ -1,5 +1,5 @@
+ install-data-hook:
+-	find -mindepth 1 -maxdepth 1 -type d -exec cp -R {} $(DESTDIR)/ \;
++	(cd $(srcdir); find -mindepth 1 -maxdepth 1 -type d -exec cp -R {} $(DESTDIR)/ \;)
+ 
+ uninstall-hook:
+-	find -mindepth 1 -type f -exec rm $(DESTDIR)/{} \;
++	(cd $(srcdir); find -mindepth 1 -type f -exec rm $(DESTDIR)/{} \;)

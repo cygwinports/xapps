@@ -1,5 +1,7 @@
+inherit gnome2 python2 python3
+
 NAME="xapps"
-VERSION=1.0.3
+VERSION=1.0.4
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="Cross-desktop application library"
@@ -7,21 +9,57 @@ DESCRIPTION="This project gathers the components which are common to multiple
 desktop environments and required to implement cross-DE solutions."
 HOMEPAGE="https://www.linuxmint.com/"
 SRC_URI="https://github.com/linuxmint/xapps/archive/${VERSION}/xapps-${VERSION}.tar.gz"
+PATCH_URI="
+	1.0.4-cygwin-glade-catalog.patch
+	1.0.4-vpath.patch
+"
 
-PKG_NAMES="libxapp1 libxapp-common libxapp-devel girepository-XApp1.0"
+PKG_NAMES="libxapp1 libxapp-common libxapp-devel libxapp-doc
+	   girepository-XApp1.0 glade-xapp vala-xapp"
 libxapp1_REQUIRES="libxapp-common"
 libxapp1_CONTENTS="
 	usr/bin/cygxapp-1.dll
 "
 libxapp_common_CONTENTS="
+	etc/postinstall/xapps.sh
 	usr/share/doc/xapps/
 	usr/share/glib-2.0/schemas/org.x.apps.*
+	usr/share/icons/hicolor/scalable/actions/*
 "
 libxapp_devel_CONTENTS="
 	usr/include/xapp/
 	usr/lib/libxapp.dll.a
 	usr/lib/pkgconfig/xapp.pc
 "
+libxapp_doc_CATEGORY="Doc"
+libxapp_doc_CONTENTS="
+	usr/share/gtk-doc/html/xapp/
+"
 girepository_XApp1_0_CONTENTS="
 	usr/*/gir*-1.0/XApp-1.0.*
+	${PYTHON2_SITELIB#/}/gi/overrides/
+	${PYTHON3_SITELIB#/}/gi/overrides/
 "
+glade_xapp_CATEGORY="Devel"
+glade_xapp_REQUIRES="libxapp1"
+glade_xapp_CONTENTS="
+	usr/share/glade/catalogs/xapp-glade-catalog.xml
+"
+vala_xapp_CATEGORY="Devel"
+vala_xapp_CONTENTS="
+	usr/share/vala/vapi/xapp.vapi
+"
+PKG_IGNORE="
+	usr/bin/pastebin
+	usr/bin/upload-system-info
+	usr/bin/xfce4-set-wallpaper
+"
+
+src_install() {
+	cd ${B}
+	cyginstall
+	python2into gi/overrides
+	dopython2 ${S}/pygobject/XApp.py
+	python3into gi/overrides
+	dopython3 ${S}/pygobject/XApp.py
+}
